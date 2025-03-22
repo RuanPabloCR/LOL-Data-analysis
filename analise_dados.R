@@ -4,7 +4,7 @@ library(dplyr)
 library(ggplot2)
 
 api_key <- "SUA_CHAVE_AQUI"
-PUUID_TITAN <- "f1PNl5iEdTEEJ0hJ9804N94E0O9mHqjGCe_vPlRkv9zO0pEg8XHyuJrNVgKmoxEk3a7xzpoFH2zJNQ"
+PUUID_Player <- "f1PNl5iEdTEEJ0hJ9804N94E0O9mHqjGCe_vPlRkv9zO0pEg8XHyuJrNVgKmoxEk3a7xzpoFH2zJNQ"
 
 matches_info <- fromJSON("C:/Users/RuanP/OneDrive/Área de Trabalho/projeto LOL/Pain Titan/matches.json")
 matches_ids <- unlist(matches_info)
@@ -36,7 +36,7 @@ for(i in seq_along(matches_ids)){
       participants <- as.data.frame(do.call(rbind, participants))
     }
     
-    player_data <- participants[participants$puuid == PUUID_TITAN,]
+    player_data <- participants[participants$puuid == PUUID_Player,]
     
     if(nrow(player_data) == 0) {
       next
@@ -55,7 +55,7 @@ for(i in seq_along(matches_ids)){
       next
     }
     #destinguir o jogador dos outros
-    player_team_champions$IsPlayer <- ifelse(player_team_champions$puuid == PUUID_TITAN, 1, 0)
+    player_team_champions$IsPlayer <- ifelse(player_team_champions$puuid == PUUID_Player, 1, 0)
     
     #salvar as informações no dataframe
     df_matches <- rbind(df_matches, data.frame(
@@ -90,11 +90,13 @@ graph1 <- ggplot(df_aux, aes(x = reorder(player_Champion, -champion_Winrate), y 
   ) +
   theme_minimal() +
   ylim(0, 1) +
-  theme(legend.position = "none") +
+  theme(legend.position = "none",plot.title = element_text(color = "red"),
+        axis.title = element_text(color = "red"),
+        axis.text = element_text(color = "red")) +
   coord_flip()
 graph2 <- ggplot(df_aux, aes(x = total_Games, y = champion_Winrate, 
                                              color = factor(player_Champion), size = total_Games)) +
-  geom_point(alpha = 0.7) +  # Deixa os pontos levemente transparentes para melhor visualização
+  geom_point(alpha = 0.7) +
   scale_size(range = c(3, 10)) +  # Ajusta a variação do tamanho dos pontos
   labs(
     title = "Winrate por Campeão vs Total de Partidas",
@@ -105,8 +107,15 @@ graph2 <- ggplot(df_aux, aes(x = total_Games, y = champion_Winrate,
   ) +
   ylim(0, 1) +
   theme_minimal() +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom", plot.title = element_text(color = "red"),
+        axis.title = element_text(color = "red"),
+        axis.text = element_text(color = "red"),
+        legend.title = element_text(color = "red"),
+        legend.text = element_text(color = "red")
+  )
 
 graph1
 graph2
-
+ggsave("graph1.png", plot = graph1, width = 8, height = 6, dpi = 300)
+ggsave("graph2.png", plot = graph2, width = 8, height = 6, dpi = 300)
+  
